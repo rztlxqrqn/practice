@@ -1,14 +1,18 @@
 /*
  入口文件,读取命令行参数
  */
+const logger = require('./lib/logger');
 const Graph = require('./lib/graph');
+
 const Distance = require('./lib/distance');
 const ShortestTrip = require('./lib/shortestTrip');
 const TripsWithDistanceLimit = require('./lib/tripsWithDistanceLimit');
 const TripsWithStopsLimit = require('./lib/tripsWithStopsLimit');
+
 const input = require('./util/input');
 const output = require('./util/output');
 const questionParser = require('./util/questionParser');
+
 let inputFile = process.argv[2];
 let question = process.argv[3];
 console.log('inputFile is %s', inputFile);
@@ -26,16 +30,11 @@ return input(inputFile)
   })
   .then((graph)=> {
     let realQuestion = questionParser(question);
-    console.log('realQuestion', JSON.stringify(realQuestion));
     if(realQuestion.type === 'distance'){
       console.log('distance');
-
-      let path = realQuestion.path;
       let excutor = new Distance(graph,realQuestion.path)
-      return excutor.getTrips(path[0],path[path.length-1])
+      return excutor.getTrips()
         .then((distance)=>{
-          console.log(distance);
-
           output(realQuestion,distance)
         })
         .catch((err)=>{
@@ -46,6 +45,8 @@ return input(inputFile)
       console.log('stopLimit');
 
       let stopLimit = {
+        from:realQuestion.from,
+        to:realQuestion.end,
         param:realQuestion.param,
         number:realQuestion.number
       };
@@ -53,7 +54,6 @@ return input(inputFile)
       let excutor = new TripsWithStopsLimit(graph,stopLimit);
       return excutor.getTrips(realQuestion.from,realQuestion.end)
         .then((trips)=>{
-          console.log(trips);
 
           output(realQuestion,trips)
         })
@@ -63,23 +63,29 @@ return input(inputFile)
 
       let distanceLimit = {
         param:realQuestion.param,
-        number:realQuestion.number
+        number:realQuestion.number,
+        from:realQuestion.from,
+        to:realQuestion.end
       };
 
       let excutor = new TripsWithDistanceLimit(graph,distanceLimit);
       return excutor.getTrips(realQuestion.from,realQuestion.end)
         .then((trips)=>{
-          console.log(trips);
-
           output(realQuestion,trips)
         })
     }
     if(realQuestion.type === 'shortest'){
-      let excutor = new ShortestTrip(graph);
+      let excutor = new ShortestTrip(graph,{
+        from:realQuestion.from,
+        to:realQuestion.end
+      });
 
       return excutor.getTrips(realQuestion.from,realQuestion.end)
         .then((distance)=>{
           output(realQuestion,distance)
+        })
+        .catch((err)=>{
+          output(realQuestion,err)
         })
     }
   })

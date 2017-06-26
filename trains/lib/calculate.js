@@ -1,28 +1,20 @@
-const emitter = require('./emitterFactory')();
-const Traveller = require('./model/traveller');
-const Travellers = require('./travellers');
+const TravellersManager = require('./travellersManager');
 class calculate{
-  constructor(graph){
+  constructor(type,graph,param){
+    this.type = type;
     this.graph = graph;
+    this.param = param;
   }
   getTrips(origin,end){
     console.log('origin is %s,end is %s', origin, end);
 
-    let traveller = new Traveller(this.graph,this.distanceLimit,this.stopLimit,this.path);
-
-    const travellers = new Travellers(traveller);
-    //travellers到达Ready状态后,获取路径
-    return new Promise((res)=>{
-      emitter.on('Ready',()=>{
-        res(travellers.getTrips().then((trips)=>{
-          let validTrips = trips.filter((trip)=>{
-            return trip.distance!=0;
-          })
-          return this.__choose(validTrips);
-        })) 
-      });
-      //开始由travellers触发工作
-      emitter.emit('Begin',origin,end);
+    return new Promise((res,rej)=>{
+      let tm = new TravellersManager();
+      tm.begin(this.type,this.graph,this.param);
+      setTimeout(()=>{
+        let result = tm.getTrips();
+        res(this.__choose(result));
+      },5000)
     })
     
   }

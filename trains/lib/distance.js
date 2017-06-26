@@ -1,8 +1,7 @@
 const Calculate = require('./calculate');
 class distance extends Calculate{
   constructor(graph,path){
-    super(graph);
-    this.path = path;
+    super('distance',graph,{path:path});
   }
   __choose(trips){
     if(trips.length===0){

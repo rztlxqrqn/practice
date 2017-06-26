@@ -1,23 +1,25 @@
 const Node = require('./model/node');
+const logger = require('./logger');
 class graph{
-  constructor(isUpdate){
+  constructor(){
+    logger.debug('graph init')
     this.nodes = [];
-    this.isUpdate = isUpdate || false;
   }
-  parseEdge(from,to,distance){
-    let self = this;
-    return this.isNodeExisted(from)
+  parseEdge(fromNodeName,toNodeName,distance){
+    logger.debug('graph.parseEdge');
+    return this.isNodeExisted(fromNodeName)
       .then((fromNode)=>{
-        return this.isNodeExisted(to)
+        return this.isNodeExisted(toNodeName)
           .then((toNode)=>{
-            return fromNode.addDirectNextNode(toNode,distance,self.isUpdate)
-              .then((res)=>{
+            return fromNode.addDirectNextNode(toNode.name,distance)
+              .then(()=>{
                 return this;
               })
           })
       })
   }
   isNodeExisted(nodeName){
+    logger.debug('graph.isNodeExisted');
     let exist = this.nodes.find((node)=>{
       return node.name === nodeName;
     });
@@ -29,6 +31,7 @@ class graph{
     return Promise.resolve(newNode);
   }
   getNode(nodeName){
+    logger.debug('graph.getNode');
     let node = this.nodes.find((node)=>{
       return node.name === nodeName;
     })

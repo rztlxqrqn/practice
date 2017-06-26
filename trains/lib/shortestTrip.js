@@ -1,7 +1,10 @@
 const Calculate = require('./calculate');
 class shortestTrip extends Calculate{
-  constructor(graph){
-    super(graph);
+  constructor(graph,params){
+    super('shortest',graph,{
+      presentNodeName:params.from,
+      destinationNodeName:params.to
+    });
   }
   __choose(trips){
     if(trips.length===0){
@@ -11,7 +14,7 @@ class shortestTrip extends Calculate{
       return num1.distance>num2.distance;
     };
     trips.sort(compare);
-    return trips[0];
+    return trips[0].distance;
   }
 }
 module.exports = shortestTrip;
