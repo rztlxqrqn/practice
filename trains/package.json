@@ -8,13 +8,16 @@
   },
   "scripts": {
     "start": "node index.js",
-    "test": "mocha",
-    "lodash": "^4.17.4"
+    "test": "mocha test --recursive",
+    "cover":"istanbul cover _mocha test --recursive"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {},
   "devDependencies": {
-    "sinon": "^2.3.5"
+    "sinon": "^2.3.5",
+    "lodash": "^4.17.4",
+    "mocha":"3.2.0",
+    "chai":"4.0.2"
   }
 }
